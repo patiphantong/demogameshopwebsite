@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}สำเร็จ - Game Shop{% endblock %}
+
+{% block extra_css %}
+<style>
+    .success-container {
+        text-align: center;
+        padding: 3rem;
+        background: white;
+        border-radius: 10px;
+        max-width: 600px;
+        margin: 2rem auto;
+    }
+
+    body.dark .success-container {
+        background-color: #2a2a2a;
+    }
+
+    .success-icon {
+        font-size: 5rem;
+        margin-bottom: 1rem;
+    }
+
+    .success-container h2 {
+        color: #27ae60;
+        margin-bottom: 1rem;
+    }
+
+    .order-details {
+        background: rgba(0,0,0,0.05);
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin: 1.5rem 0;
+    }
+
+    body.dark .order-details {
+        background: rgba(255,255,255,0.05);
+    }
+
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+    }
+
+    .btn-home {
+        display: inline-block;
+        padding: 0.8rem 1.5rem;
+        background: #667eea;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: 0.3s;
+    }
+
+    .btn-home:hover {
+        background: #5568d3;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="success-container">
+    <div class="success-icon">✅</div>
+    <h2>ซื้อสำเร็จแล้ว!</h2>
+    <p>ขอบคุณที่ซื้อจากร้านเกมของเรา</p>
+
+    <div class="order-details">
+        <div class="detail-row">
+            <span><strong>รหัสคำสั่งซื้อ:</strong></span>
+            <span>#{{ order_id }}</span>
+        </div>
+        <div class="detail-row">
+            <span><strong>ราคารวม:</strong></span>
+            <span>฿{{ "%.2f"|format(total_price) }}</span>
+        </div>
+        <div class="detail-row">
+            <span><strong>สถานะ:</strong></span>
+            <span>✅ ชำระแล้ว</span>
+        </div>
+    </div>
+
+    <a href="{{ url_for('index') }}" class="btn-home">ไปเลือกเกมต่อ</a>
+</div>
+{% endblock %}

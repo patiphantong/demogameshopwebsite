@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+
+{% block title %}Game Shop - หน้าแรก{% endblock %}
+
+{% block extra_css %}
+<style>
+    .search-bar {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .search-bar input, .search-bar select {
+        padding: 0.7rem;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 1rem;
+    }
+
+    body.dark .search-bar input, 
+    body.dark .search-bar select {
+        background-color: #333;
+        color: white;
+        border-color: #555;
+    }
+
+    .category-filter {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .category-btn {
+        padding: 0.5rem 1rem;
+        border: 2px solid #667eea;
+        background: white;
+        color: #667eea;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    body.dark .category-btn {
+        background-color: #333;
+        color: #88b0ff;
+        border-color: #88b0ff;
+    }
+
+    .category-btn:hover, .category-btn.active {
+        background: #667eea;
+        color: white;
+    }
+
+    body.dark .category-btn.active {
+        background: #88b0ff;
+        color: #000;
+    }
+
+    .games-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .game-card {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        transition: 0.3s;
+        cursor: pointer;
+    }
+
+    body.dark .game-card {
+        background-color: #2a2a2a;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+
+    .game-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+
+    .game-image {
+        width: 100%;
+        height: 200px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+    }
+
+    .game-info {
+        padding: 1rem;
+    }
+
+    .game-name {
+        font-size: 1.1rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+
+    .game-price {
+        font-size: 1.2rem;
+        color: #27ae60;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+
+    .game-rating {
+        color: #f39c12;
+        margin-bottom: 0.5rem;
+    }
+
+    .game-rating.free {
+        color: #e74c3c;
+    }
+
+    .game-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+
+    .btn {
+        flex: 1;
+        padding: 0.6rem;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: 0.3s;
+    }
+
+    .btn-primary {
+        background: #667eea;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #5568d3;
+    }
+
+    .btn-success {
+        background: #27ae60;
+        color: white;
+    }
+
+    .btn-success:hover {
+        background: #229954;
+    }
+
+    .btn-info {
+        background: #3498db;
+        color: white;
+    }
+
+    .btn-info:hover {
+        background: #2980b9;
+    }
+
+    body.dark .btn {
+        opacity: 0.9;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h2>🎮 ร้านเกมของเรา</h2>
+
+<div class="search-bar">
+    <form method="GET" style="flex: 1; display: flex; gap: 1rem;">
+        <input type="text" name="search" placeholder="ค้นหาเกม..." value="{{ search_query }}">
+        <select name="sort">
+            <option value="name">เรียงตามชื่อ</option>
+            <option value="price_low">ราคา (ต่ำ→สูง)</option>
+            <option value="price_high">ราคา (สูง→ต่ำ)</option>
+        </select>
+        <button type="submit" class="btn btn-primary">🔍 ค้นหา</button>
+    </form>
+</div>
+
+<h3>หมวดหมู่:</h3>
+<div class="category-filter">
+    <a href="{{ url_for('index') }}" class="category-btn {% if selected_category is none %}active{% endif %}">ทั้งหมด</a>
+    {% for cat in categories %}
+        <a href="{{ url_for('index', category=cat['category_id']) }}" 
+           class="category-btn {% if selected_category == cat['category_id'] %}active{% endif %}">
+            {{ cat['category_name'] }}
+        </a>
+    {% endfor %}
+</div>
+
+<div class="games-grid">
+    {% if games %}
+        {% for game in games %}
+            <div class="game-card">
+                <div class="game-image">
+                    {% if game.image_url %}
+                        <div style="width:100%; height:180px; overflow:hidden; background:linear-gradient(135deg, #667eea 0%, #764ba2 100%); display:flex; justify-content:center; align-items:center; border-radius:10px 10px 0 0;">
+                            <img src="{{ game.image_url.strip() }}"
+                                style="max-width:100%; max-height:100%; object-fit:contain; display:block;">
+                        </div>
+                    {% else %}
+                        <span style="font-size:3rem;">🕹️</span>
+                    {% endif %}
+                </div>
+                <div class="game-info">
+                    <div class="game-name">{{ game['name'] }}</div>
+                    {% if game['price'] == 0 %}
+                        <div class="game-price free">ฟรี!</div>
+                    {% else %}
+                        <div class="game-price">฿{{ "%.2f"|format(game['price']) }}</div>
+                    {% endif %}
+                    <div class="game-rating">⭐ {{ game['avg_rating'] }} ({{ game['total_reviews'] }} รีวิว)</div>
+                    <div class="game-actions">
+                        <a href="{{ url_for('game_detail', game_id=game['game_id']) }}" class="btn btn-info">ดู</a>
+                        {% if game['price'] == 0 %}
+                            <a href="{{ url_for('download_game', game_id=game['game_id']) }}" class="btn btn-success">⬇️ ดาวน์โหลด</a>
+                        {% else %}
+                            <form method="POST" action="{{ url_for('add_to_cart', game_id=game['game_id']) }}" style="flex: 1;">
+                                <button type="submit" class="btn btn-primary" style="width: 100%;">🛒 ใส่ตะกร้า</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>ไม่พบเกมที่ตรงกับการค้นหา</p>
+    {% endif %}
+</div>
+{% endblock %}

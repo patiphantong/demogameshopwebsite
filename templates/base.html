@@ -1,1 +1,126 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Game Shop{% endblock %}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: 0.3s;
+        }
+
+        body.light {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        body.dark {
+            background-color: #1a1a1a;
+            color: #fff;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+        }
+
+        nav {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        nav a, nav button {
+            color: white;
+            text-decoration: none;
+            background: rgba(255,255,255,0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        nav a:hover, nav button:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        body.dark header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        }
+
+        body.dark footer {
+            background-color: #111;
+        }
+
+        .error {
+            color: #e74c3c;
+            padding: 1rem;
+            background: #ffe0e0;
+            border-radius: 5px;
+            margin: 1rem 0;
+        }
+
+        body.dark .error {
+            background: #5a2c2c;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="{{ session.get('theme', 'light') }}">
+    <header>
+        <h1>🎮 Game Shop</h1>
+        <nav>
+            {% if session.get('user_id') %}
+                <span>👤 {{ session.get('username') }}</span>
+                <a href="{{ url_for('cart') }}">🛒 ตะกร้า</a>
+                <form method="POST" action="{{ url_for('toggle_theme') }}" style="display:inline;">
+                    <button type="submit">{% if session.get('theme') == 'light' %}🌙{% else %}☀️{% endif %}</button>
+                </form>
+                <a href="{{ url_for('logout') }}">ออกจากระบบ</a>
+            {% else %}
+                <a href="{{ url_for('register') }}">สมัครสมาชิก</a>
+                <a href="{{ url_for('login') }}">เข้าสู่ระบบ</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Game Shop | ทำด้วย ❤️</p>
+    </footer>
+</body>
+</html>

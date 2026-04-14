@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}ชำระเงิน - Game Shop{% endblock %}
+
+{% block extra_css %}
+<style>
+    .checkout-form {
+        max-width: 600px;
+        margin: 0 auto;
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+    }
+
+    body.dark .checkout-form {
+        background-color: #2a2a2a;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 0.7rem;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 1rem;
+    }
+
+    body.dark .form-group input {
+        background-color: #333;
+        color: white;
+        border-color: #555;
+    }
+
+    .order-summary {
+        background: rgba(0,0,0,0.05);
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin-bottom: 1.5rem;
+    }
+
+    body.dark .order-summary {
+        background: rgba(255,255,255,0.05);
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+    }
+
+    .summary-total {
+        border-top: 2px solid #667eea;
+        padding-top: 1rem;
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+
+    .btn-pay {
+        width: 100%;
+        padding: 1rem;
+        background: #27ae60;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .btn-pay:hover {
+        background: #229954;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h2>💳 ชำระเงิน</h2>
+
+<div class="checkout-form">
+    <h3>สรุปคำสั่งซื้อ</h3>
+    <div class="order-summary">
+        {% for item in cart_items %}
+            <div class="summary-row">
+                <span>{{ item['name'] }} x{{ item['quantity'] }}</span>
+                <span>฿{{ "%.2f"|format(item['price'] * item['quantity']) if item['price'] > 0 else 'ฟรี' }}</span>
+            </div>
+        {% endfor %}
+        <div class="summary-row summary-total">
+            <span>รวมทั้งสิ้น:</span>
+            <span>฿{{ "%.2f"|format(total_price) }}</span>
+        </div>
+    </div>
+
+    <form method="POST">
+        <div class="form-group">
+            <label>หมายเหตุ (ไม่บังคับ):</label>
+            <input type="text" placeholder="หมายเหตุการสั่งซื้อ">
+        </div>
+        <button type="submit" class="btn-pay">💳 ยืนยันการชำระเงิน</button>
+    </form>
+</div>
+{% endblock %}

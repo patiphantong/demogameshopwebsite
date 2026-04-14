@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}ตะกร้า - Game Shop{% endblock %}
+
+{% block extra_css %}
+<style>
+    .cart-container {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 2rem;
+    }
+
+    @media (max-width: 768px) {
+        .cart-container {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .cart-items {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+    }
+
+    body.dark .cart-items {
+        background-color: #2a2a2a;
+    }
+
+    .cart-item {
+        display: grid;
+        grid-template-columns: 100px 1fr 100px;
+        gap: 1rem;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid #ddd;
+    }
+
+    body.dark .cart-item {
+        border-bottom-color: #555;
+    }
+
+    .item-image {
+        width: 100px;
+        height: 100px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+    }
+
+    .item-info h4 {
+        margin-bottom: 0.5rem;
+    }
+
+    .item-price {
+        color: #27ae60;
+        font-weight: bold;
+    }
+
+    .cart-summary {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        height: fit-content;
+    }
+
+    body.dark .cart-summary {
+        background-color: #2a2a2a;
+    }
+
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #ddd;
+    }
+
+    body.dark .summary-item {
+        border-bottom-color: #555;
+    }
+
+    .summary-total {
+        display: flex;
+        justify-content: space-between;
+        font-size: 1.3rem;
+        font-weight: bold;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 2px solid #667eea;
+    }
+
+    .btn-checkout {
+        width: 100%;
+        padding: 1rem;
+        background: #27ae60;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        margin-top: 1rem;
+        transition: 0.3s;
+    }
+
+    .btn-checkout:hover {
+        background: #229954;
+    }
+
+    .btn-remove {
+        background: #e74c3c;
+        color: white;
+        border: none;
+        padding: 0.5rem;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .btn-remove:hover {
+        background: #c0392b;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h2>🛒 ตะกร้าของคุณ</h2>
+
+{% if cart_items %}
+    <div class="cart-container">
+        <div class="cart-items">
+            {% for item in cart_items %}
+                <div class="cart-item">
+                    <div class="item-image">🕹️</div>
+                    <div class="item-info">
+                        <h4>{{ item['name'] }}</h4>
+                        {% if item['price'] == 0 %}
+                            <p class="item-price">ฟรี</p>
+                        {% else %}
+                            <p class="item-price">฿{{ "%.2f"|format(item['price']) }}</p>
+                        {% endif %}
+                        <p>จำนวน: {{ item['quantity'] }}</p>
+                    </div>
+                    <form method="POST" action="{{ url_for('remove_from_cart', cart_item_id=item['cart_item_id']) }}">
+                        <button type="submit" class="btn-remove">ลบ</button>
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="cart-summary">
+            <h3>สรุป</h3>
+            <div class="summary-item">
+                <span>รวม:</span>
+                <span>฿{{ "%.2f"|format(total_price) }}</span>
+            </div>
+            <form method="GET" action="{{ url_for('checkout') }}">
+                <button type="submit" class="btn-checkout">ดำเนินการชำระเงิน</button>
+            </form>
+        </div>
+    </div>
+{% else %}
+    <p>ตะกร้าว่าง</p>
+    <a href="{{ url_for('index') }}" class="btn btn-primary">ไปเลือกเกม</a>
+{% endif %}
+{% endblock %}
