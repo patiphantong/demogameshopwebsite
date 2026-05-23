@@ -321,19 +321,78 @@ def add_review(game_id):
 
 @app.route('/download/<int:game_id>')
 def download_game(game_id):
+
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    
+
     db = get_db()
     cursor = db.cursor()
-    cursor.execute('SELECT * FROM games WHERE game_id = ? AND price = 0', (game_id,))
+
+    cursor.execute(
+        "SELECT * FROM games WHERE game_id = ? AND price = 0",
+        (game_id,)
+    )
+
     game = cursor.fetchone()
-    db.close()
-    
+
     if not game:
+        db.close()
         return redirect(url_for('index'))
-    
-    return render_template('download_page.html', game=game)
+
+    user_id = session['user_id']
+
+    cursor.execute(
+        "SELECT cart_id FROM cart WHERE user_id = ?",
+        (user_id,)
+    )
+
+    cart = cursor.fetchone()
+
+    if cart is None:
+        cursor.execute(
+            "INSERT INTO cart (user_id) VALUES (?)",
+            (user_id,)
+        )
+
+        db.commit()
+
+        cursor.execute(
+            "SELECT cart_id FROM cart WHERE user_id = ?",
+            (user_id,)
+        )
+
+        cart = cursor.fetchone()
+
+    try:
+        cart_id = cart['cart_id']
+    except:
+        cart_id = cart[0]
+
+    cursor.execute(
+        """
+        SELECT * FROM cart_items
+        WHERE cart_id = ? AND game_id = ?
+        """,
+        (cart_id, game_id)
+    )
+
+    existing_item = cursor.fetchone()
+
+    if existing_item is None:
+
+        cursor.execute(
+            """
+            INSERT INTO cart_items (cart_id, game_id, quantity)
+            VALUES (?, ?, ?)
+            """,
+            (cart_id, game_id, 1)
+        )
+
+        db.commit()
+
+    db.close()
+
+    return redirect(url_for('index'))
 
 # ===== API =====
 @app.route('/api/cart-count')
